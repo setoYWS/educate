@@ -63,7 +63,12 @@ class _LevelsState extends State<Levels> {
                   height: 40,
                 ),
                 InkWell(
-                  onTap: () => Get.to(AdvancedTilePage()),
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => AdvancedTilePage()));
+                  },
                   child: lesson('assets/images/easter-egg.png', '2',
                       'Grammar I', Colors.cyan),
                 ),
