@@ -1,7 +1,11 @@
+import 'package:educate/main.dart';
+import 'package:educate/src/home/config.dart';
+import 'package:http/http.dart' as http;
 import 'package:educate/src/home/profile_teacher.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:educate/src/home/participant_list.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
   @override
@@ -23,6 +27,17 @@ class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    void logoutUser() async {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.clear();
+      var response = await http.post(Uri.parse(logout));
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => MyApp(token: null)),
+        ModalRoute.withName('/'),
+      );
+    }
+
     if (people == true) {
       return AppBar(
         centerTitle: true,
@@ -91,6 +106,11 @@ class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
             ),
             onPressed: () => Get.to(ProfileTeacher()),
           ),
+          IconButton(
+              onPressed: () {
+                logoutUser();
+              },
+              icon: Icon(Icons.logout))
         ],
         automaticallyImplyLeading: lead,
       );

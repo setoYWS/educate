@@ -1,9 +1,14 @@
 import 'dart:math';
+import 'package:educate/main.dart';
+import 'package:educate/src/home/config.dart';
 import 'package:educate/src/home/detail_level.dart';
 import 'package:educate/src/home/classlist_teacher.dart';
+import 'package:educate/src/home/home.dart';
 import 'package:get/get.dart';
 import 'package:educate/src/home/quiz.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 class Levels extends StatefulWidget {
   const Levels({Key? key}) : super(key: key);
@@ -13,6 +18,17 @@ class Levels extends StatefulWidget {
 }
 
 class _LevelsState extends State<Levels> {
+  void logoutUser() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.clear();
+    var response = await http.post(Uri.parse(logout));
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => MyApp(token: null)),
+      ModalRoute.withName('/'),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,18 +44,15 @@ class _LevelsState extends State<Levels> {
               ),
               appBarItem('assets/images/crown.png', '12', Colors.yellow),
               appBarItem('assets/images/offFire.png', '0', Colors.grey),
-              appBarItem('assets/images/gem.png', '111', Colors.red),
             ],
           ),
-        ),
-        floatingActionButton: FloatingActionButton(
-          child: Icon(
-            Icons.person,
-            color: Colors.pink,
-            size: 30,
-          ),
-          backgroundColor: Color.fromARGB(255, 58, 91, 201),
-          onPressed: () => Get.to(classlist_teacher()),
+          actions: <Widget>[
+            IconButton(
+                onPressed: () {
+                  logoutUser();
+                },
+                icon: Icon(Icons.logout))
+          ],
         ),
         body: Stack(
           alignment: Alignment.topRight,

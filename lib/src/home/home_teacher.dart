@@ -3,10 +3,11 @@ import 'package:educate/src/home/stat_teacher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 
 class HomeTeacher extends StatefulWidget {
-  const HomeTeacher({Key? key}) : super(key: key);
-
+  final token;
+  HomeTeacher({@required this.token, Key? key}) : super(key: key);
   @override
   _HomeTeacherState createState() => _HomeTeacherState();
 }
@@ -26,7 +27,15 @@ class _HomeTeacherState extends State<HomeTeacher> {
     });
   }
 
+  late String userId;
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Map<String, dynamic> jwtDecodedToken = JwtDecoder.decode(widget.token);
+    userId = jwtDecodedToken['_id'];
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(

@@ -1,43 +1,34 @@
 import 'package:educate/src/home/home.dart';
 import 'package:educate/src/home/login.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
-  runApp(MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  runApp(MyApp(
+    token: prefs.getString('token'),
+  ));
 }
 
-class MyApp extends StatefulWidget {
-  @override
-  _MyAppState createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  autoLogin() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool? loggedIn = prefs.getBool('loggedin');
-
-    if (loggedIn == true) {
-      return Home();
-    } else {
-      return LoginPage();
-    }
-  }
-
+class MyApp extends StatelessWidget {
+  final token;
+  MyApp({
+    @required this.token,
+    Key? key,
+  }) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: FutureBuilder(
-        future: autoLogin(),
-        builder: (BuildContext context, snapshot) {
-          if (snapshot.hasData) {
-            return LoginPage();
-          } else {
-            return LoginPage();
-          }
-        },
-      ),
-    );
+        title: 'Flutter Demo',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          primaryColor: Colors.black,
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+        ),
+        home: (token != null && JwtDecoder.isExpired(token) == false)
+            ? Home(token: token)
+            : SignInPage());
   }
 }

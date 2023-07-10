@@ -1,15 +1,17 @@
 import 'package:educate/src/home/level.dart';
 import 'package:educate/src/home/leaderboard.dart';
 import 'package:educate/src/home/progress.dart';
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:http/http.dart' as http;
+import 'config.dart';
 
 class Home extends StatefulWidget {
-  const Home({Key? key}) : super(key: key);
-
+  final token;
+  Home({@required this.token, Key? key}) : super(key: key);
   @override
-  _HomeState createState() => _HomeState();
+  State<Home> createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
@@ -27,7 +29,15 @@ class _HomeState extends State<Home> {
     });
   }
 
+  late String userId;
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Map<String, dynamic> jwtDecodedToken = JwtDecoder.decode(widget.token);
+    userId = jwtDecodedToken['_id'];
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
