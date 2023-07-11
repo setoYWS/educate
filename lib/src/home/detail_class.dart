@@ -206,21 +206,4 @@ class _DetailClassState extends State<DetailClass> {
           ],
         )),
       );
-
-  Widget buildTile(AdvancedTile tile) => ListTile(
-      leading: tile.icon != null ? Icon(tile.icon) : null,
-      title: Text(tile.title),
-      onTap: tile.id != 0
-          ? tile.method != 'Quiz'
-              ? () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => Materi(id: tile.id),
-                      // Pass the arguments as part of the RouteSettings. The
-                      // DetailScreen reads the arguments from these settings.
-                    ),
-                  );
-                }
-              : () => Get.to(QuizScreen())
-          : null);
 }

@@ -44,7 +44,9 @@ class _SignInPageState extends State<SignInPage> {
       var jsonResponse = jsonDecode(response.body);
       if (jsonResponse['status'] ?? true) {
         var myToken = jsonResponse['token'];
+        var myId = jsonResponse['_id'];
         prefs.setString('token', myToken);
+        prefs.setString('userid', myId);
         if (jsonResponse['roles'] == "Student") {
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => Home(token: myToken)));

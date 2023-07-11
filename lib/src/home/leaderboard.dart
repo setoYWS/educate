@@ -1,5 +1,10 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:educate/src/home/config.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class Leaderboard extends StatefulWidget {
   const Leaderboard({Key? key}) : super(key: key);
@@ -9,6 +14,22 @@ class Leaderboard extends StatefulWidget {
 }
 
 class _LeaderboardState extends State<Leaderboard> {
+  List? jsonResponse;
+  Future getAllScore() async {
+    final headers = {HttpHeaders.contentTypeHeader: 'application/json'};
+    var response = await http.get(Uri.parse(allScore), headers: headers);
+    this.setState(() {
+      jsonResponse = jsonDecode(response.body);
+    });
+
+    print(jsonResponse?[1]["score"]);
+  }
+
+  @override
+  void initState() {
+    this.getAllScore();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -130,38 +151,34 @@ class _LeaderboardState extends State<Leaderboard> {
               margin: EdgeInsets.all(20),
               child: SizedBox(
                 height: 300,
-                child: ListView.separated(
-                    shrinkWrap: true,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Row(
-                          children: [
-                            CircleAvatar(
-                              backgroundImage: NetworkImage(
-                                  "https://images.unsplash.com/photo-1661209851626-20d6fb8022e4?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=435&q=80"),
-                            ),
-                            SizedBox(
-                              width: 3,
-                            ),
-                            Text("Player")
-                          ],
-                        ),
-                        leading: Text(
-                          "#${index + 1}",
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        trailing: Text(
-                            "${(15000 / (index + 1)).toString().substring(0, 4)} pts",
-                            style: TextStyle(fontWeight: FontWeight.bold)),
-                      );
-                    },
-                    separatorBuilder: (context, index) => Divider(
-                          thickness: 1,
-                          color: Color.fromARGB(255, 15, 30, 163),
-                          indent: 10,
-                          endIndent: 10,
-                        ),
-                    itemCount: 12),
+                child: ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  itemCount: jsonResponse == null ? 0 : jsonResponse?.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return ListTile(
+                      title: Row(
+                        children: [
+                          CircleAvatar(
+                            backgroundImage: NetworkImage(
+                                "https://images.unsplash.com/photo-1661209851626-20d6fb8022e4?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=435&q=80"),
+                          ),
+                          SizedBox(
+                            width: 3,
+                          ),
+                          Text(jsonResponse?[index]["username"])
+                        ],
+                      ),
+                      leading: Text(
+                        "#${index + 1}",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      trailing: Text(
+                          "${jsonResponse?[index]["score"].toString()} pts",
+                          style: TextStyle(fontWeight: FontWeight.bold)),
+                    );
+                  },
+                ),
               ),
             )
           ],
