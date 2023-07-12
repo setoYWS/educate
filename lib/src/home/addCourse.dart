@@ -58,18 +58,28 @@ class _AddCourseState extends State<AddCourse> {
     this.setState(() {
       jsonResponse = jsonDecode(response.body);
     });
-    Navigator.push(context,
-            MaterialPageRoute(builder: (context) => classlist_teacher()))
-        .whenComplete(() {
-      return showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text("Success"),
-              content: Text(jsonResponse["message"]),
-            );
-          });
-    });
+
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Success"),
+            titleTextStyle: TextStyle(
+                fontWeight: FontWeight.bold, color: Colors.black, fontSize: 20),
+            actionsOverflowButtonSpacing: 20,
+            actions: [
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => classlist_teacher()));
+                  },
+                  child: Text("OK")),
+            ],
+            content: Text(jsonResponse["message"]),
+          );
+        });
   }
 
   @override
