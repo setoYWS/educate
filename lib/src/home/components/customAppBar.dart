@@ -7,7 +7,7 @@ import 'package:get/get.dart';
 import 'package:educate/src/home/participant_list.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
+class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   final Size preferredSize;
 

@@ -1,11 +1,10 @@
-import 'package:educate/src/home/classlist_teacher.dart';
 import 'package:educate/src/home/config.dart';
+import 'package:educate/src/home/home_teacher.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 
 class AddCourse extends StatefulWidget {
   @override
@@ -28,7 +27,7 @@ class _AddCourseState extends State<AddCourse> {
   bool nilaiSwitch = true;
   String selectedValue = "Beginner";
   SharedPreferences? prefs;
-  var jsonResponse;
+  var jsonResponse, imagePath;
   TextEditingController coursenameController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
 
@@ -42,22 +41,35 @@ class _AddCourseState extends State<AddCourse> {
     prefs = await SharedPreferences.getInstance();
   }
 
-  void addCourse() async {
+  Future addCourse(imageFilePath) async {
     final id = prefs?.getString('userid') ?? '{}';
-    var reqBody = {
-      "instructorid": id,
-      "coursename": coursenameController.text,
-      "level": selectedValue,
-      "description": descriptionController.text,
-      "image": "imagepath"
-    };
-
-    var response = await http.post(Uri.parse(newcourse),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode(reqBody));
-    this.setState(() {
-      jsonResponse = jsonDecode(response.body);
-    });
+    final myToken = prefs?.getString('token') ?? '{}';
+    var request = http.MultipartRequest('POST', Uri.parse(newcourse));
+    var multi = await http.MultipartFile.fromPath(
+      'image',
+      imageFilePath,
+    );
+    request.files.add(multi);
+    // var reqBody = {
+    //   "instructorid": id,
+    //   "coursename": coursenameController.text,
+    //   "level": selectedValue,
+    //   "description": descriptionController.text,
+    //   "image": "imagepath"
+    // };
+    request.fields['instructorid'] = id;
+    request.fields['coursename'] = coursenameController.text;
+    request.fields['level'] = selectedValue;
+    request.fields['description'] = descriptionController.text;
+    var res = await request.send();
+    jsonResponse = await http.Response.fromStream(res);
+    final result = jsonDecode(jsonResponse.body);
+    // var response = await http.post(Uri.parse(newcourse),
+    //     headers: {"Content-Type": "application/json"},
+    //     body: jsonEncode(reqBody));
+    // this.setState(() {
+    //   jsonResponse = jsonDecode(response.body);
+    // });
 
     return showDialog(
         context: context,
@@ -73,13 +85,21 @@ class _AddCourseState extends State<AddCourse> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => classlist_teacher()));
+                            builder: (context) => HomeTeacher(token: myToken)));
                   },
                   child: Text("OK")),
             ],
-            content: Text(jsonResponse["message"]),
+            content: Text(result["message"]),
           );
         });
+  }
+
+  Future pickImage() async {
+// show a dialog to open a file
+    FilePickerResult? file =
+        await FilePicker.platform.pickFiles(type: FileType.image);
+    imagePath = file?.files.first.path;
+    print(imagePath);
   }
 
   @override
@@ -160,7 +180,9 @@ class _AddCourseState extends State<AddCourse> {
                       items: dropdownItems),
                 ),
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    pickImage();
+                  },
                   child: Text('Upload Photo'),
                 ),
                 ElevatedButton(
@@ -176,7 +198,7 @@ class _AddCourseState extends State<AddCourse> {
                     minimumSize: Size(100, 40), //////// HERE
                   ),
                   onPressed: () {
-                    addCourse();
+                    addCourse(imagePath);
                   },
                 ),
               ],
