@@ -101,8 +101,8 @@ class _Classlist_teacherState extends State<classlist_teacher> {
                                 borderRadius: BorderRadius.circular(10.0),
                                 image: DecorationImage(
                                   fit: BoxFit.fill,
-                                  image: AssetImage(
-                                      'assets/images/school-bag.png'),
+                                  image: NetworkImage(
+                                      url + jsonResponse?[index]["image"]),
                                 )),
                           ),
                         ),
