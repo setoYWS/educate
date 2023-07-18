@@ -1,10 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:educate/src/home/addCourse.dart';
 import 'package:educate/src/home/config.dart';
 import 'package:educate/src/home/detail_class.dart';
 import 'package:educate/src/home/edit_class.dart';
+import 'package:educate/src/home/payload.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -34,9 +36,11 @@ class _Classlist_teacherState extends State<classlist_teacher> {
   }
 
   Future getCourseInstructor() async {
-    final id = prefs?.getString('userid') ?? '{}';
+    final myToken = prefs?.getString('token') ?? '{}';
+    final jwt = JWT.decode(myToken);
+    final decoded = Payload.fromJson(jwt.payload);
     final headers = {
-      "instid": id,
+      "instid": decoded.id ?? '',
       HttpHeaders.contentTypeHeader: 'application/json'
     };
     var response =
@@ -141,7 +145,17 @@ class _Classlist_teacherState extends State<classlist_teacher> {
                                     const SizedBox(width: 8),
                                     TextButton(
                                       child: const Text('Open'),
-                                      onPressed: () => {},
+                                      onPressed: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    DetailClass(
+                                                      courseid:
+                                                          jsonResponse?[index]
+                                                              ["_id"],
+                                                    )));
+                                      },
                                     ),
                                     const SizedBox(width: 8),
                                   ],

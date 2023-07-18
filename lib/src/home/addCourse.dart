@@ -1,3 +1,4 @@
+import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:educate/src/home/config.dart';
 import 'package:educate/src/home/home_teacher.dart';
 import 'package:flutter/material.dart';
@@ -5,6 +6,9 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:file_picker/file_picker.dart';
+
+import 'components/customAppBar.dart';
+import 'payload.dart';
 
 class AddCourse extends StatefulWidget {
   @override
@@ -42,34 +46,23 @@ class _AddCourseState extends State<AddCourse> {
   }
 
   Future addCourse(imageFilePath) async {
-    final id = prefs?.getString('userid') ?? '{}';
     final myToken = prefs?.getString('token') ?? '{}';
+    final jwt = JWT.decode(myToken);
+    final decoded = Payload.fromJson(jwt.payload);
     var request = http.MultipartRequest('POST', Uri.parse(newcourse));
     var multi = await http.MultipartFile.fromPath(
       'image',
       imageFilePath,
     );
     request.files.add(multi);
-    // var reqBody = {
-    //   "instructorid": id,
-    //   "coursename": coursenameController.text,
-    //   "level": selectedValue,
-    //   "description": descriptionController.text,
-    //   "image": "imagepath"
-    // };
-    request.fields['instructorid'] = id;
+    print(decoded.id);
+    request.fields['instructorid'] = decoded.id ?? '';
     request.fields['coursename'] = coursenameController.text;
     request.fields['level'] = selectedValue;
     request.fields['description'] = descriptionController.text;
     var res = await request.send();
     jsonResponse = await http.Response.fromStream(res);
-    final result = jsonDecode(jsonResponse.body);
-    // var response = await http.post(Uri.parse(newcourse),
-    //     headers: {"Content-Type": "application/json"},
-    //     body: jsonEncode(reqBody));
-    // this.setState(() {
-    //   jsonResponse = jsonDecode(response.body);
-    // });
+    final result = jsonResponse.body;
 
     return showDialog(
         context: context,
@@ -105,8 +98,10 @@ class _AddCourseState extends State<AddCourse> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Tambah Class"),
+      appBar: CustomAppBar(
+        'Tambah Class',
+        lead: false,
+        people: false,
       ),
       body: Form(
         key: _formKey,

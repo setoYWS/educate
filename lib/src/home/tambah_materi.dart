@@ -1,16 +1,30 @@
+import 'dart:convert';
+
+import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
+import 'package:educate/src/home/detail_class.dart';
 import 'package:educate/src/home/materi_form.dart';
+import 'package:educate/src/home/payload.dart';
 import 'package:educate/src/home/quiz_form.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:http/http.dart' as http;
+
+import 'config.dart';
+import 'home_teacher.dart';
 
 class TambahMateri extends StatefulWidget {
+  String courseid;
+  TambahMateri({required this.courseid, Key? key}) : super(key: key);
   @override
   _TambahMateriState createState() => _TambahMateriState();
 }
 
 List<DropdownMenuItem<String>> get dropdownItems {
   List<DropdownMenuItem<String>> menuItems = [
-    DropdownMenuItem(child: Text("Materi"), value: "Materi"),
+    DropdownMenuItem(child: Text("Modul"), value: "Modul"),
     DropdownMenuItem(child: Text("Kuis"), value: "Kuis"),
   ];
   return menuItems;
@@ -22,7 +36,70 @@ class _TambahMateriState extends State<TambahMateri> {
   double nilaiSlider = 1;
   bool nilaiCheckBox = false;
   bool nilaiSwitch = true;
-  String selectedValue = "Materi";
+  String selectedValue = "Modul";
+  SharedPreferences? prefs;
+  var jsonResponse, imagePath;
+  TextEditingController materinameController = TextEditingController();
+  TextEditingController descriptionController = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    initSharedPref();
+  }
+
+  void initSharedPref() async {
+    prefs = await SharedPreferences.getInstance();
+  }
+
+  Future addModul(imageFilePath) async {
+    final myToken = prefs?.getString('token') ?? '{}';
+    final jwt = JWT.decode(myToken);
+    final decoded = Payload.fromJson(jwt.payload);
+    var request = http.MultipartRequest('POST', Uri.parse(newmodul));
+    var multi = await http.MultipartFile.fromPath(
+      'image',
+      imageFilePath,
+    );
+    request.files.add(multi);
+    request.fields['courseid'] = widget.courseid;
+    request.fields['modulname'] = materinameController.text;
+    request.fields['description'] = descriptionController.text;
+    var res = await request.send();
+    jsonResponse = await http.Response.fromStream(res);
+    final result = jsonDecode(jsonResponse.body);
+
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Success"),
+            titleTextStyle: TextStyle(
+                fontWeight: FontWeight.bold, color: Colors.black, fontSize: 20),
+            actionsOverflowButtonSpacing: 20,
+            actions: [
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => DetailClass(
+                                  courseid: widget.courseid,
+                                )));
+                  },
+                  child: Text("OK")),
+            ],
+            content: Text(result["message"]),
+          );
+        });
+  }
+
+  Future pickImage() async {
+// show a dialog to open a file
+    FilePickerResult? file =
+        await FilePicker.platform.pickFiles(type: FileType.image);
+    imagePath = file?.files.first.path;
+    print(imagePath);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +117,7 @@ class _TambahMateriState extends State<TambahMateri> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextFormField(
+                    controller: materinameController,
                     decoration: new InputDecoration(
                       hintText: "English Class",
                       labelText: "Lesson Title",
@@ -58,6 +136,7 @@ class _TambahMateriState extends State<TambahMateri> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextFormField(
+                    controller: descriptionController,
                     obscureText: false,
                     decoration: new InputDecoration(
                       labelText: "Lesson Description",
@@ -133,6 +212,15 @@ class _TambahMateriState extends State<TambahMateri> {
                       });
                     },
                     items: dropdownItems),
+                Visibility(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      pickImage();
+                    },
+                    child: Text('Upload Photo'),
+                  ),
+                  visible: selectedValue == "Modul",
+                ),
                 ElevatedButton(
                   child: Text(
                     "Next",
@@ -157,10 +245,7 @@ class _TambahMateriState extends State<TambahMateri> {
                         );
                         print("sukses");
                       } else {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => MateriForm()),
-                        );
+                        addModul(imagePath);
                       }
                     }
                   },

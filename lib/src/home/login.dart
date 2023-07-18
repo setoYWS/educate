@@ -1,12 +1,14 @@
 import 'dart:convert';
 import 'package:educate/src/home/home.dart';
 import 'package:educate/src/home/home_teacher.dart';
+import 'package:educate/src/home/payload.dart';
 import 'package:educate/src/home/signup.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'applogo.dart';
 import 'package:http/http.dart' as http;
 import 'config.dart';
+import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 
 class SignInPage extends StatefulWidget {
   @override
@@ -44,10 +46,10 @@ class _SignInPageState extends State<SignInPage> {
       var jsonResponse = jsonDecode(response.body);
       if (jsonResponse['status'] ?? true) {
         var myToken = jsonResponse['token'];
-        var myId = jsonResponse['_id'];
+        final jwt = JWT.decode(myToken);
+        final decoded = Payload.fromJson(jwt.payload);
         prefs.setString('token', myToken);
-        prefs.setString('userid', myId);
-        if (jsonResponse['roles'] == "Student") {
+        if (decoded.roles == "Student") {
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => Home(token: myToken)));
         } else {

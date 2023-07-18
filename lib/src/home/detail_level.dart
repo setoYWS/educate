@@ -42,7 +42,7 @@ class _AdvancedTilePageState extends State<AdvancedTilePage> {
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
-          title: Text('Detail Level'),
+          title: Text('Daftar Course'),
           centerTitle: true,
         ),
         body: SingleChildScrollView(

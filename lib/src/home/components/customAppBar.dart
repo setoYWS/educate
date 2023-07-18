@@ -68,8 +68,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             child: Container(
               width: MediaQuery.of(context).size.width,
               color: Color.fromARGB(255, 11, 228, 199),
-              height: 10.0,
-              child: Text("Persenan progres"),
+              height: 20.0,
+              child: Center(child: Text("5/7")),
             ),
             preferredSize: Size.fromHeight(10.0)),
         automaticallyImplyLeading: lead,
