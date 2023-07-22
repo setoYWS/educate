@@ -173,7 +173,12 @@ class _DetailClassState extends State<DetailClass> {
                                 : jsonResponseQ?.length,
                             itemBuilder: (BuildContext context, int index) {
                               return GestureDetector(
-                                onTap: () {},
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => QuizScreen()));
+                                },
                                 child: Padding(
                                     padding: const EdgeInsets.only(bottom: 12),
                                     child: Container(

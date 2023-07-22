@@ -12,10 +12,20 @@ class Registration extends StatefulWidget {
   _RegistrationState createState() => _RegistrationState();
 }
 
+List<DropdownMenuItem<String>> get dropdownItems {
+  List<DropdownMenuItem<String>> menuItems = [
+    DropdownMenuItem(child: Text("Peserta"), value: "Student"),
+    DropdownMenuItem(child: Text("Instruktur"), value: "Instructor")
+  ];
+  return menuItems;
+}
+
 class _RegistrationState extends State<Registration> {
+  TextEditingController usernameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   bool _isNotValidate = false;
+  String selectedValue = "Student";
 
   void registerUser() async {
     if (emailController.text.isNotEmpty && passwordController.text.isNotEmpty) {
@@ -54,7 +64,7 @@ class _RegistrationState extends State<Registration> {
           height: MediaQuery.of(context).size.height,
           decoration: BoxDecoration(
             gradient: LinearGradient(
-                colors: [const Color(0XFFF95A3B), const Color(0XFFF96713)],
+                colors: <Color>[Color.fromRGBO(5, 134, 240, 0.856), Colors.red],
                 begin: FractionalOffset.topLeft,
                 end: FractionalOffset.bottomCenter,
                 stops: [0.0, 0.8],
@@ -72,6 +82,19 @@ class _RegistrationState extends State<Registration> {
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  TextField(
+                    controller: usernameController,
+                    keyboardType: TextInputType.text,
+                    decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white,
+                        errorStyle: TextStyle(color: Colors.white),
+                        errorText: _isNotValidate ? "Enter Proper Info" : null,
+                        hintText: "Username",
+                        border: OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(10.0)))),
                   ),
                   TextField(
                     controller: emailController,
@@ -115,6 +138,35 @@ class _RegistrationState extends State<Registration> {
                             borderRadius:
                                 BorderRadius.all(Radius.circular(10.0)))),
                   ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: DropdownButtonFormField(
+                        hint: Text("Roles"),
+                        decoration: InputDecoration(
+                          enabledBorder: OutlineInputBorder(
+                            borderSide:
+                                BorderSide(color: Colors.blue, width: 2),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          border: OutlineInputBorder(
+                            borderSide:
+                                BorderSide(color: Colors.blue, width: 2),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          filled: true,
+                          fillColor: Color.fromARGB(255, 255, 255, 255),
+                        ),
+                        validator: (value) =>
+                            value == null ? "Pilih Tingkat Kesulitan" : null,
+                        dropdownColor: Color.fromARGB(255, 253, 253, 253),
+                        value: selectedValue,
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            selectedValue = newValue!;
+                          });
+                        },
+                        items: dropdownItems),
+                  ),
                   ElevatedButton(
                     onPressed: () => {registerUser()},
                     child: Text(
@@ -126,7 +178,7 @@ class _RegistrationState extends State<Registration> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      print("Sign In");
+                      print("Sign Up");
                       Navigator.push(
                           context,
                           MaterialPageRoute(

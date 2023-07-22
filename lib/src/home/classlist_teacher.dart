@@ -23,6 +23,7 @@ class classlist_teacher extends StatefulWidget {
 class _Classlist_teacherState extends State<classlist_teacher> {
   SharedPreferences? prefs;
   List? jsonResponse;
+  String? image;
 
   @override
   void initState() {
@@ -65,6 +66,12 @@ class _Classlist_teacherState extends State<classlist_teacher> {
               shrinkWrap: true,
               itemCount: jsonResponse == null ? 0 : jsonResponse?.length,
               itemBuilder: (BuildContext context, int index) {
+                if (jsonResponse?[index]["image"] == "") {
+                  image =
+                      "https://pluspng.com/img-png/flower-hd-png-abstract-flower-picture-png-image-1271.png";
+                } else {
+                  image = url + jsonResponse?[index]["image"];
+                }
                 return Container(
                   height: 230,
                   child: Stack(
@@ -105,8 +112,7 @@ class _Classlist_teacherState extends State<classlist_teacher> {
                                 borderRadius: BorderRadius.circular(10.0),
                                 image: DecorationImage(
                                   fit: BoxFit.fill,
-                                  image: NetworkImage(
-                                      url + jsonResponse?[index]["image"]),
+                                  image: NetworkImage(image ?? ""),
                                 )),
                           ),
                         ),

@@ -7,7 +7,7 @@ class CommonLogo extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         Image.network(
-          "https://pluspng.com/img-png/avengers-logo-png-avengers-logo-png-1376.png",
+          "https://pluspng.com/img-png/star-png-star-png-image-3580.png",
           width: 100,
         ),
         Text(

@@ -50,19 +50,20 @@ class _AddCourseState extends State<AddCourse> {
     final jwt = JWT.decode(myToken);
     final decoded = Payload.fromJson(jwt.payload);
     var request = http.MultipartRequest('POST', Uri.parse(newcourse));
-    var multi = await http.MultipartFile.fromPath(
-      'image',
-      imageFilePath,
-    );
-    request.files.add(multi);
-    print(decoded.id);
+    if (imagePath != null) {
+      var multi = await http.MultipartFile.fromPath(
+        'image',
+        imageFilePath,
+      );
+      request.files.add(multi);
+    }
     request.fields['instructorid'] = decoded.id ?? '';
     request.fields['coursename'] = coursenameController.text;
     request.fields['level'] = selectedValue;
     request.fields['description'] = descriptionController.text;
     var res = await request.send();
     jsonResponse = await http.Response.fromStream(res);
-    final result = jsonResponse.body;
+    final result = jsonDecode(jsonResponse.body);
 
     return showDialog(
         context: context,

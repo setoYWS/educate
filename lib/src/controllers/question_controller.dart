@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:get/state_manager.dart';
@@ -104,8 +105,11 @@ class QuestionController extends GetxController
       // Once timer is finish go to the next qn
       _animationController.forward().whenComplete(nextQuestion);
     } else {
-      // Get package provide us simple way to naviigate another page
-      Get.to(ScoreScreen());
+      Widget build(BuildContext context) {
+        // Get package provide us simple way to naviigate another page
+
+        return ScoreScreen();
+      }
     }
   }
 
