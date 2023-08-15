@@ -321,12 +321,34 @@ class _StatTeacherState extends State<StatTeacher> {
                                         children: <Widget>[
                                           TextButton(
                                             child: const Text('Edit'),
-                                            onPressed: () => {},
+                                            onPressed: () => {
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          EditClass(
+                                                            courseid:
+                                                                jsonResponse?[
+                                                                        index]
+                                                                    ["_id"],
+                                                          )))
+                                            },
                                           ),
                                           const SizedBox(width: 8),
                                           TextButton(
                                             child: const Text('Open'),
-                                            onPressed: () => {},
+                                            onPressed: () => {
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          DetailClass(
+                                                            courseid:
+                                                                jsonResponse?[
+                                                                        index]
+                                                                    ["_id"],
+                                                          )))
+                                            },
                                           ),
                                           const SizedBox(width: 8),
                                         ],

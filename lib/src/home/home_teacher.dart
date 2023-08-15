@@ -18,7 +18,6 @@ class _HomeTeacherState extends State<HomeTeacher> {
   static const List<Widget> _widgetOptions = <Widget>[
     StatTeacher(),
     classlist_teacher(),
-    classlist_teacher(),
   ];
 
   void _onItemTapped(int index) {
@@ -52,11 +51,6 @@ class _HomeTeacherState extends State<HomeTeacher> {
             icon: ImageIcon(AssetImage("assets/images/shield.png")),
             activeIcon: ImageIcon(AssetImage("assets/images/shield2.png")),
             label: 'Class',
-          ),
-          BottomNavigationBarItem(
-            icon: ImageIcon(AssetImage("assets/images/market.png")),
-            activeIcon: ImageIcon(AssetImage("assets/images/market2.png")),
-            label: 'Rank',
           ),
         ],
         currentIndex: _selectedIndex,

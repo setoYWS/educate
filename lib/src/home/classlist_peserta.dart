@@ -4,25 +4,28 @@ import 'dart:io';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:educate/src/home/addCourse.dart';
 import 'package:educate/src/home/config.dart';
+import 'package:educate/src/home/detailClassPeserta.dart';
 import 'package:educate/src/home/detail_class.dart';
 import 'package:educate/src/home/edit_class.dart';
 import 'package:educate/src/home/payload.dart';
+import 'package:educate/src/models/course.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'components/customAppBar.dart';
 
-class classlist_teacher extends StatefulWidget {
-  const classlist_teacher({Key? key}) : super(key: key);
+class classlist_peserta extends StatefulWidget {
+  const classlist_peserta({Key? key}) : super(key: key);
 
   @override
-  _Classlist_teacherState createState() => _Classlist_teacherState();
+  _Classlist_pesertaState createState() => _Classlist_pesertaState();
 }
 
-class _Classlist_teacherState extends State<classlist_teacher> {
+class _Classlist_pesertaState extends State<classlist_peserta> {
   SharedPreferences? prefs;
   List? jsonResponse;
+  List<courselist>? courseResponse;
   String? image;
 
   @override
@@ -41,13 +44,15 @@ class _Classlist_teacherState extends State<classlist_teacher> {
     final jwt = JWT.decode(myToken);
     final decoded = Payload.fromJson(jwt.payload);
     final headers = {
-      "instid": decoded.id ?? '',
+      "userid": decoded.id ?? '',
       HttpHeaders.contentTypeHeader: 'application/json'
     };
-    var response =
-        await http.get(Uri.parse(courseInstructor), headers: headers);
+    var response = await http.get(Uri.parse(mycourse), headers: headers);
     this.setState(() {
       jsonResponse = jsonDecode(response.body);
+      // courseResponse = (jsonDecode(response.body)["courseid"] as List)
+      //     .map((e) => courselist.fromJson(e))
+      //     .toList();
     });
   }
 
@@ -66,7 +71,7 @@ class _Classlist_teacherState extends State<classlist_teacher> {
               shrinkWrap: true,
               itemCount: jsonResponse == null ? 0 : jsonResponse?.length,
               itemBuilder: (BuildContext context, int index) {
-                if (jsonResponse?[index]["image"] == "") {
+                if ("courseResponse?.coursename" != "") {
                   image =
                       "https://pluspng.com/img-png/flower-hd-png-abstract-flower-picture-png-image-1271.png";
                 } else {
@@ -127,7 +132,7 @@ class _Classlist_teacherState extends State<classlist_teacher> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  jsonResponse?[index]["coursename"],
+                                  jsonResponse?[index]["_id"],
                                   style: TextStyle(
                                       fontSize: 16,
                                       color: Color(0xFF363f93),
@@ -135,7 +140,7 @@ class _Classlist_teacherState extends State<classlist_teacher> {
                                 ),
                                 Divider(color: Colors.black),
                                 Text(
-                                  jsonResponse?[index]["description"],
+                                  jsonResponse?[index]['studentid'],
                                   style: TextStyle(
                                       fontSize: 11,
                                       color: Colors.grey,
@@ -144,34 +149,39 @@ class _Classlist_teacherState extends State<classlist_teacher> {
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: <Widget>[
-                                    TextButton(
-                                      child: const Text('Edit'),
-                                      onPressed: () => {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) => EditClass(
-                                                      courseid:
-                                                          jsonResponse?[index]
-                                                              ["_id"],
-                                                    )))
-                                      },
-                                    ),
                                     const SizedBox(width: 8),
-                                    TextButton(
-                                      child: const Text('Open'),
-                                      onPressed: () {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    DetailClass(
-                                                      courseid:
-                                                          jsonResponse?[index]
-                                                              ["_id"],
-                                                    )));
-                                      },
-                                    ),
+                                    Visibility(
+                                        visible: jsonResponse?[index]['status'],
+                                        child: TextButton(
+                                          child: const Text('Open'),
+                                          onPressed: () {
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) => DetailClassPeserta(
+                                                        courseid:
+                                                            jsonResponse?[index]
+                                                                ["courseid"],
+                                                        studyid:
+                                                            jsonResponse?[index]
+                                                                ["_id"],
+                                                        progressmodul:
+                                                            jsonResponse?[index]
+                                                                [
+                                                                "progressmodul"],
+                                                        progressquiz:
+                                                            jsonResponse?[index]
+                                                                [
+                                                                "progresskuis"])));
+                                          },
+                                        )),
+                                    Visibility(
+                                        visible: !jsonResponse?[index]
+                                            ['status'],
+                                        child: TextButton(
+                                          child: const Text('Waiting'),
+                                          onPressed: () {},
+                                        )),
                                     const SizedBox(width: 8),
                                   ],
                                 ),

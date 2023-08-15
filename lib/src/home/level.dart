@@ -35,17 +35,7 @@ class _LevelsState extends State<Levels> {
         appBar: AppBar(
           backgroundColor: Colors.blue,
           elevation: 1.7,
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Image.asset(
-                'assets/images/indo.png',
-                height: 30,
-              ),
-              appBarItem('assets/images/crown.png', '12', Colors.yellow),
-              appBarItem('assets/images/offFire.png', '0', Colors.grey),
-            ],
-          ),
+          title: Text("Jalur Pembelajaran"),
           actions: <Widget>[
             IconButton(
                 onPressed: () {
@@ -67,7 +57,8 @@ class _LevelsState extends State<Levels> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => AdvancedTilePage()));
+                            builder: (context) =>
+                                detail_level(level: "Beginner")));
                   },
                   child: lesson('assets/images/easter-egg.png', '2',
                       'Grammar I', Colors.cyan),
@@ -93,60 +84,6 @@ class _LevelsState extends State<Levels> {
                 const SizedBox(height: 10),
                 const Divider(
                   thickness: 2,
-                ),
-                twolessons(bonus(), bonus()),
-                const SizedBox(height: 10),
-                const Divider(
-                  thickness: 2,
-                ),
-                const SizedBox(height: 10),
-                lesson(
-                    'assets/images/easter-egg.png', '2', 'Intro', Colors.cyan),
-                const SizedBox(
-                  height: 15,
-                ),
-                twolessons(
-                  lesson('assets/images/message.png', '3', 'Phrases',
-                      Colors.orange),
-                  lesson(
-                      'assets/images/airplane.png', '3', 'Travel', Colors.teal),
-                ),
-                const SizedBox(
-                  height: 15,
-                ),
-                twolessons(
-                  lesson('assets/images/food.png', '1', 'Restaurant',
-                      Colors.green),
-                  lesson('assets/images/family.png', '4', 'Family', Colors.red),
-                ),
-                const SizedBox(height: 10),
-                const Divider(
-                  thickness: 2,
-                ),
-                twolessons(bonus(), bonus()),
-                const SizedBox(height: 10),
-                const Divider(
-                  thickness: 2,
-                ),
-                const SizedBox(height: 10),
-                lesson(
-                    'assets/images/easter-egg.png', '2', 'Intro', Colors.cyan),
-                const SizedBox(
-                  height: 15,
-                ),
-                twolessons(
-                  lesson('assets/images/message.png', '3', 'Phrases',
-                      Colors.orange),
-                  lesson(
-                      'assets/images/airplane.png', '3', 'Travel', Colors.teal),
-                ),
-                const SizedBox(
-                  height: 15,
-                ),
-                twolessons(
-                  lesson('assets/images/food.png', '1', 'Restaurant',
-                      Colors.green),
-                  lesson('assets/images/family.png', '4', 'Family', Colors.red),
                 ),
                 const SizedBox(
                   height: 15,

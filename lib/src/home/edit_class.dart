@@ -1,7 +1,15 @@
+import 'package:educate/src/home/home_teacher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+import 'package:file_picker/file_picker.dart';
+import 'config.dart';
 
 class EditClass extends StatefulWidget {
+  String courseid;
+  EditClass({required this.courseid, Key? key}) : super(key: key);
   @override
   _EditClassState createState() => _EditClassState();
 }
@@ -20,7 +28,69 @@ class _EditClassState extends State<EditClass> {
   double nilaiSlider = 1;
   bool nilaiCheckBox = false;
   bool nilaiSwitch = true;
+  SharedPreferences? prefs;
   String selectedValue = "Beginner";
+  var jsonResponse, imagePath;
+  TextEditingController coursenameController = TextEditingController();
+  TextEditingController descriptionController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    initSharedPref();
+  }
+
+  void initSharedPref() async {
+    prefs = await SharedPreferences.getInstance();
+  }
+
+  Future editCourse(imageFilePath) async {
+    final myToken = prefs?.getString('token') ?? '{}';
+    var request = http.MultipartRequest('PATCH', Uri.parse(newcourse));
+    if (imagePath != null) {
+      var multi = await http.MultipartFile.fromPath(
+        'image',
+        imageFilePath,
+      );
+      request.files.add(multi);
+    }
+    request.fields['id'] = widget.courseid;
+    request.fields['coursename'] = coursenameController.text;
+    request.fields['description'] = descriptionController.text;
+    var res = await request.send();
+    jsonResponse = await http.Response.fromStream(res);
+    final result = jsonDecode(jsonResponse.body);
+
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Success"),
+            titleTextStyle: TextStyle(
+                fontWeight: FontWeight.bold, color: Colors.black, fontSize: 20),
+            actionsOverflowButtonSpacing: 20,
+            actions: [
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => HomeTeacher(token: myToken)));
+                  },
+                  child: Text("OK")),
+            ],
+            content: Text(result["message"]),
+          );
+        });
+  }
+
+  Future pickImage() async {
+// show a dialog to open a file
+    FilePickerResult? file =
+        await FilePicker.platform.pickFiles(type: FileType.image);
+    imagePath = file?.files.first.path;
+    print(imagePath);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +108,7 @@ class _EditClassState extends State<EditClass> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextFormField(
-                    initialValue: "Basic Class",
+                    controller: coursenameController,
                     decoration: new InputDecoration(
                       hintText: "English Class",
                       labelText: "Class Name",
@@ -57,7 +127,7 @@ class _EditClassState extends State<EditClass> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextFormField(
-                    initialValue: "Learn Basic English within few days",
+                    controller: descriptionController,
                     obscureText: false,
                     decoration: new InputDecoration(
                       labelText: "Class Description",
@@ -100,7 +170,9 @@ class _EditClassState extends State<EditClass> {
                       items: dropdownItems),
                 ),
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    pickImage();
+                  },
                   child: Text('Upload Photo'),
                 ),
                 ElevatedButton(
@@ -118,7 +190,9 @@ class _EditClassState extends State<EditClass> {
                     minimumSize: Size(100, 40), //////// HERE
                   ),
                   onPressed: () {
-                    if (_formKey.currentState!.validate()) {}
+                    if (_formKey.currentState!.validate()) {
+                      editCourse(imagePath);
+                    }
                   },
                 ),
               ],

@@ -158,7 +158,9 @@ class _Progressstate extends State<Progress> {
                 ],
               ),
             ),
-            onTap: () => Get.to(AdvancedTilePage()),
+            onTap: () => Get.to(detail_level(
+              level: "Beginner",
+            )),
           )
         ])));
   }

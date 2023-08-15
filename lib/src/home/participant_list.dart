@@ -1,50 +1,39 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
+import 'config.dart';
+import 'package:http/http.dart' as http;
+
 class ParticipantList extends StatefulWidget {
-  const ParticipantList({Key? key}) : super(key: key);
+  String courseid;
+  ParticipantList({Key? key, required this.courseid}) : super(key: key);
 
   @override
   _ParticipantListState createState() => _ParticipantListState();
 }
 
-class User {
-  final String username;
-  final String email;
-
-  const User({required this.username, required this.email});
-}
-
 class _ParticipantListState extends State<ParticipantList> {
-  List<User> users = [
-    const User(
-      username: 'Seto Yogo',
-      email: 'setoyogo@gmail.com',
-    ),
-    const User(
-      username: 'Widyo Yogo',
-      email: 'widyoyogo@gmail.com',
-    ),
-    const User(
-      username: 'Yogo Suhendro',
-      email: 'yogosuhendro@gmail.com',
-    ),
-    const User(
-      username: 'Seto Widyo',
-      email: 'setowidyo@gmail.com',
-    ),
-    const User(
-      username: 'Yogo Widyo',
-      email: 'yogowidyo@gmail.com',
-    ),
-    const User(
-      username: 'Suhendro Yogo',
-      email: 'suhendroyogo@gmail.com',
-    ),
-    const User(
-      username: 'Seto Suhendro',
-      email: 'setosuhendro@gmail.com',
-    ),
-  ];
+  Map<String, dynamic>? jsonResponse;
+
+  @override
+  void initState() {
+    super.initState();
+    getParticipant();
+  }
+
+  Future getParticipant() async {
+    final headers = {
+      "courseid": widget.courseid,
+      HttpHeaders.contentTypeHeader: 'application/json'
+    };
+    var response =
+        await http.get(Uri.parse(participantlister), headers: headers);
+    this.setState(() {
+      jsonResponse = jsonDecode(response.body);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -117,22 +106,37 @@ class _ParticipantListState extends State<ParticipantList> {
               child: MediaQuery.removePadding(
             context: context,
             child: ListView.builder(
+                shrinkWrap: true,
                 padding: const EdgeInsets.all(8),
-                itemCount: users.length,
+                itemCount: jsonResponse?.length,
                 itemBuilder: (context, index) {
-                  final user = users[index];
                   return Card(
-                    child: ListTile(
-                      leading: CircleAvatar(
-                        radius: 28,
-                        backgroundImage: NetworkImage(
-                            "https://images.unsplash.com/photo-1661209851626-20d6fb8022e4?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=435&q=80"),
-                      ),
-                      title: Text(user.username),
-                      subtitle: Text(user.email),
-                      trailing: const Icon(Icons.delete),
-                    ),
-                  );
+                      child: ListTile(
+                          leading: CircleAvatar(
+                            radius: 28,
+                            backgroundImage: NetworkImage(
+                                "https://images.unsplash.com/photo-1661209851626-20d6fb8022e4?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=435&q=80"),
+                          ),
+                          title: Text(jsonResponse?[index]['studentid'] ?? ""),
+                          subtitle: Text("@gmail.com"),
+                          trailing: ButtonBar(
+                              alignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                TextButton(
+                                  child: Icon(
+                                    Icons.check,
+                                    color: Colors.green,
+                                  ),
+                                  onPressed: () {},
+                                ),
+                                TextButton(
+                                  child: Icon(
+                                    Icons.close,
+                                    color: Colors.red,
+                                  ),
+                                  onPressed: () {},
+                                ),
+                              ])));
                 }),
           ))
         ],

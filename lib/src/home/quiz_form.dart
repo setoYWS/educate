@@ -60,29 +60,31 @@ class _QuestionFormState extends State<QuestionForm> {
           appBar: AppBar(
             title: const Text('Questions'),
           ),
-          body: Container(
-            padding: const EdgeInsets.all(20.0),
-            child: Form(
-              key: _formKey,
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(15.0),
-                child: SizedBox(
-                  height: MediaQuery.of(context).size.height,
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: ListView.separated(
-                            shrinkWrap: true,
-                            physics: const ScrollPhysics(),
-                            separatorBuilder: (context, index) =>
-                                const Divider(),
-                            itemCount: _count,
-                            itemBuilder: (context, index) {
-                              return _uiWidget(index);
-                            }),
-                      )
-                    ],
+          body: SingleChildScrollView(
+            child: Container(
+              padding: const EdgeInsets.all(20.0),
+              child: Form(
+                key: _formKey,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(15.0),
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: ListView.separated(
+                              shrinkWrap: true,
+                              physics: const ScrollPhysics(),
+                              separatorBuilder: (context, index) =>
+                                  const Divider(),
+                              itemCount: _count,
+                              itemBuilder: (context, index) {
+                                return _uiWidget(index);
+                              }),
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ),

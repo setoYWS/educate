@@ -55,15 +55,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 Color.fromRGBO(5, 134, 240, 0.856)
               ])),
         ),
-        actions: [
-          IconButton(
-            icon: Icon(
-              Icons.people,
-              color: Color.fromARGB(255, 3, 68, 121),
-            ),
-            onPressed: () => Get.to(ParticipantList()),
-          ),
-        ],
         bottom: PreferredSize(
             child: Container(
               width: MediaQuery.of(context).size.width,

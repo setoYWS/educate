@@ -1,3 +1,4 @@
+import 'package:educate/src/home/classlist_peserta.dart';
 import 'package:educate/src/home/level.dart';
 import 'package:educate/src/home/leaderboard.dart';
 import 'package:educate/src/home/progress.dart';
@@ -20,7 +21,7 @@ class _HomeState extends State<Home> {
   static const List<Widget> _widgetOptions = <Widget>[
     Levels(),
     Leaderboard(),
-    Progress(),
+    classlist_peserta(),
   ];
 
   void _onItemTapped(int index) {
@@ -58,7 +59,7 @@ class _HomeState extends State<Home> {
           BottomNavigationBarItem(
             icon: ImageIcon(AssetImage("assets/images/market.png")),
             activeIcon: ImageIcon(AssetImage("assets/images/market2.png")),
-            label: 'Progress',
+            label: 'My Class',
           ),
         ],
         currentIndex: _selectedIndex,

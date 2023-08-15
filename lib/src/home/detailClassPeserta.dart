@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:educate/src/home/detail_modulTeacher.dart';
-import 'package:educate/src/home/participant_list.dart';
 import 'package:educate/src/home/payload.dart';
 import 'package:educate/src/home/quiz.dart';
 import 'package:educate/src/home/quizPageStudent.dart';
@@ -14,14 +13,20 @@ import 'package:http/http.dart' as http;
 import 'components/customAppBar.dart';
 import 'config.dart';
 
-class DetailClass extends StatefulWidget {
-  String courseid;
-  DetailClass({required this.courseid, Key? key}) : super(key: key);
+class DetailClassPeserta extends StatefulWidget {
+  String courseid, studyid, progressmodul, progressquiz;
+  DetailClassPeserta(
+      {required this.courseid,
+      required this.studyid,
+      required this.progressmodul,
+      required this.progressquiz,
+      Key? key})
+      : super(key: key);
   @override
-  _DetailClassState createState() => _DetailClassState();
+  _DetailClassPesertaState createState() => _DetailClassPesertaState();
 }
 
-class _DetailClassState extends State<DetailClass> {
+class _DetailClassPesertaState extends State<DetailClassPeserta> {
   SharedPreferences? prefs;
   List? jsonResponseM;
   List? jsonResponseQ;
@@ -87,33 +92,21 @@ class _DetailClassState extends State<DetailClass> {
               Icons.people,
               color: Color.fromARGB(255, 3, 68, 121),
             ),
-            onPressed: () => {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => ParticipantList(
-                            courseid: widget.courseid,
-                          )))
-            },
+            onPressed: () => {},
           ),
         ],
+        bottom: PreferredSize(
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              color: Color.fromARGB(255, 11, 228, 199),
+              height: 20.0,
+              child: Center(
+                  child: Text(
+                      (widget.progressmodul + widget.progressquiz).toString() +
+                          "/10")),
+            ),
+            preferredSize: Size.fromHeight(10.0)),
         automaticallyImplyLeading: true,
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(
-          Icons.add,
-          color: Color.fromARGB(255, 255, 255, 255),
-          size: 30,
-        ),
-        backgroundColor: Color.fromARGB(255, 58, 91, 201),
-        onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => TambahMateri(
-                        courseid: widget.courseid,
-                      )));
-        },
       ),
       body: SingleChildScrollView(
           child: Column(

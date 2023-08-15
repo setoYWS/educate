@@ -8,7 +8,7 @@ import 'package:educate/src/home/score.dart';
 // We use get package for our state management
 
 class QuestionController extends GetxController
-    with SingleGetTickerProviderMixin {
+    with GetSingleTickerProviderStateMixin {
   // Lets animated our progress bar
 
   late AnimationController _animationController;
@@ -52,7 +52,7 @@ class QuestionController extends GetxController
     // Our animation duration is 60 s
     // so our plan is to fill the progress bar within 60s
     _animationController =
-        AnimationController(duration: Duration(seconds: 60), vsync: this);
+        AnimationController(duration: Duration(seconds: 20), vsync: this);
     _animation = Tween<double>(begin: 0, end: 1).animate(_animationController)
       ..addListener(() {
         // update like setState
@@ -105,10 +105,10 @@ class QuestionController extends GetxController
       // Once timer is finish go to the next qn
       _animationController.forward().whenComplete(nextQuestion);
     } else {
-      Widget build(BuildContext context) {
+      Future build(BuildContext context) {
         // Get package provide us simple way to naviigate another page
-
-        return ScoreScreen();
+        return Navigator.push(
+            context, MaterialPageRoute(builder: (context) => ScoreScreen()));
       }
     }
   }
